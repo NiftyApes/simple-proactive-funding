@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -20,7 +20,7 @@ contract SimpleProactiveFunding is
     Ownable,
     Pausable,
     ReentrancyGuard,
-    ERC721URIStorage,
+    ERC721URIStorage
 {
     using SafeERC20 for IERC20;
 
@@ -61,6 +61,11 @@ contract SimpleProactiveFunding is
     error MaxFundingMet(address projectAddress);
 
     /***** ADMIN FUNCTIONS *****/
+
+    constructor(string memory name, string memory symbol, address initialOwner) 
+        ERC721(name, symbol) 
+        Ownable(initialOwner)
+    {}
 
     /// @notice Pauses all token transfers and minting.
     /// @dev This function can only be called by the contract owner.
@@ -112,10 +117,10 @@ contract SimpleProactiveFunding is
         /*** EFFECTS ***/       
         // if donation amount is greater than remaining to be raised, transfer delta
         if (donationAmount > (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress])) {
-            SafeERC20(OPContractAddress).transferFrom(msg.sender, projectAddress, (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress]));
+            IERC20(OPContractAddress).safeTransferFrom(msg.sender, projectAddress, (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress]));
         } else {
         // transfer full amount
-            SafeERC20(OPContractAddress).transferFrom(msg.sender, projectAddress, donationAmount);
+            IERC20(OPContractAddress).safeTransferFrom(msg.sender, projectAddress, donationAmount);
         }
         // mint project nft
         _safeMint(msg.sender, nftIdNonce);
@@ -168,7 +173,7 @@ contract SimpleProactiveFunding is
     /***** SECURITY BEST PRACTICE FUNCTIONS *****/
 
     // function to prevent owner from renouncing ownership
-    function renounceOwnership() public override onlyOwner {
+    function renounceOwnership() public view override onlyOwner {
         revert("Ownership cannot be renounced");
     }
     // Function to revert when contract receives ether with no data
