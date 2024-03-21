@@ -9,7 +9,7 @@ import "./UsersFixtures.sol";
 import "forge-std/Test.sol";
 
 // deploy & initializes Simple Proactive Funding contracts
-contract SellerFinancingDeployment is Test, UsersFixtures {
+contract SimpleProactiveFundingDeployment is Test, UsersFixtures {
     SimpleProactiveFunding simpleProactiveFunding;
 
     function setUp() public virtual override {
@@ -17,7 +17,7 @@ contract SellerFinancingDeployment is Test, UsersFixtures {
 
         vm.startPrank(owner);
 
-        simpleProactiveFunding = new SimpleProactiveFunding("GoFundOP", "GFOP", msg.sender);
+        simpleProactiveFunding = new SimpleProactiveFunding("GoFundOP", "GFOP", owner);
 
         vm.stopPrank();
     }

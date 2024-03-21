@@ -60,11 +60,11 @@ contract UsersFixtures is Test {
         return user;
     }
 
-    function mintWeth(address user, uint256 amount) internal {
-        IERC20 wethToken = IERC20(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-        address wethWhale = 0xF04a5cC80B1E94C69B48f5ee68a08CD2F09A7c3E;
-        vm.startPrank(wethWhale);
-        wethToken.transfer(user, amount);
+    function mintOP(address user, uint256 amount) internal {
+        IERC20 opToken = IERC20(0x4200000000000000000000000000000000000042);
+        address opWhale = 0xB00499bef904E32Ac55d23F2492Fae133a217406;
+        vm.startPrank(opWhale);
+        opToken.transfer(user, amount);
         vm.stopPrank();
     }
 }

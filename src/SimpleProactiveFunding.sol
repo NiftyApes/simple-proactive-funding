@@ -2,7 +2,6 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
@@ -18,7 +17,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract SimpleProactiveFunding is
     Ownable,
-    Pausable,
     ReentrancyGuard,
     ERC721URIStorage
 {
@@ -60,24 +58,14 @@ contract SimpleProactiveFunding is
     /// @dev Reverts if the funding goal for the project has already been met.
     error MaxFundingMet(address projectAddress);
 
-    /***** ADMIN FUNCTIONS *****/
+    /***** CONSTRUCTOR *****/
 
     constructor(string memory name, string memory symbol, address initialOwner) 
         ERC721(name, symbol) 
         Ownable(initialOwner)
     {}
 
-    /// @notice Pauses all token transfers and minting.
-    /// @dev This function can only be called by the contract owner.
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /// @notice Unpauses all token transfers and minting.
-    /// @dev This function can only be called by the contract owner.
-    function unpause() external onlyOwner {
-        _unpause();
-    }
+    /***** ADMIN FUNCTIONS *****/
 
     /// @notice Sets the maximum funding amount for a specific RPGF project and whitelists it for donations.
     /// @param projectAddress The address of the RPGF project to be whitelisted.
@@ -101,7 +89,7 @@ contract SimpleProactiveFunding is
         uint256 donationAmount,
         string calldata projectNFTMetadataURI,
         string calldata earlyFunderNFTMetadataURI
-    ) external whenNotPaused nonReentrant {
+    ) external nonReentrant {
         /*** CHECKS ***/
         // if projectAddress is not whitelisted, revert
         _requireIsWhitelistedAddress(projectAddress);
