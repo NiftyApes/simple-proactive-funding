@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-
-
 import "../src/SimpleProactiveFunding.sol";
 import "./UsersFixtures.sol";
 
@@ -12,12 +10,13 @@ import "forge-std/Test.sol";
 contract SimpleProactiveFundingDeployment is Test, UsersFixtures {
     SimpleProactiveFunding simpleProactiveFunding;
 
+
     function setUp() public virtual override {
         super.setUp();
 
         vm.startPrank(owner);
 
-        simpleProactiveFunding = new SimpleProactiveFunding("GoFundOP", "GFOP", owner);
+        simpleProactiveFunding = new SimpleProactiveFunding("GoFundOP", "GFOP", owner, 0x4200000000000000000000000000000000000042);
 
         vm.stopPrank();
     }

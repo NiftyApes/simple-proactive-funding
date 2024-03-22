@@ -24,8 +24,8 @@ contract SimpleProactiveFunding is
 
     /***** STATE VARIABLES *****/
 
-    /// @notice The stored address for the OP token contract
-    address public constant OPContractAddress = 0x4200000000000000000000000000000000000042;
+    /// @notice The stored address for the token contract
+    address public tokenAddress;
 
     /// @notice The nonce for the NFTs minted by this contract
     /// @dev increments by two for each donation, once for projectNFT, once for earlyFunderNFT
@@ -60,10 +60,12 @@ contract SimpleProactiveFunding is
 
     /***** CONSTRUCTOR *****/
 
-    constructor(string memory name, string memory symbol, address initialOwner) 
+    constructor(string memory name, string memory symbol, address initialOwner, address _tokenAddress) 
         ERC721(name, symbol) 
         Ownable(initialOwner)
-    {}
+    {
+        tokenAddress = _tokenAddress;
+    }
 
     /***** ADMIN FUNCTIONS *****/
 
@@ -105,10 +107,12 @@ contract SimpleProactiveFunding is
         /*** EFFECTS ***/       
         // if donation amount is greater than remaining to be raised, transfer delta
         if (donationAmount > (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress])) {
-            IERC20(OPContractAddress).safeTransferFrom(msg.sender, projectAddress, (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress]));
+            IERC20(tokenAddress).safeTransferFrom(msg.sender, projectAddress, (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress]));
+
+            donationAmount = (fundingAmounts[projectAddress] - fundingAmountsReceived[projectAddress]);
         } else {
         // transfer full amount
-            IERC20(OPContractAddress).safeTransferFrom(msg.sender, projectAddress, donationAmount);
+            IERC20(tokenAddress).safeTransferFrom(msg.sender, projectAddress, donationAmount);
         }
         // mint project nft
         _safeMint(msg.sender, nftIdNonce);
